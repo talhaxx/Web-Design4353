@@ -1,0 +1,55 @@
+.volunteer-matching-container {
+    position: relative;
+    display: inline-block;
+    padding: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.volunteer-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.volunteer-dropdown select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.matching-events {
+    margin-top: 15px;
+}
+
+.matching-events select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.volunteer-card {
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.match-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.match-button:hover {
+    background-color: darkred;
+}
