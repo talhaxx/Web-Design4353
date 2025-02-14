@@ -1,4 +1,5 @@
 import React from 'react';
+import './VolunteerHistory.css'; // Import the CSS file
 
 const VolunteerHistory = () => {
   // Sample volunteer history data
@@ -15,10 +16,24 @@ const VolunteerHistory = () => {
     // Add more records as needed
   ];
 
+  // Function to determine the urgency class
+  const getUrgencyClass = (urgency) => {
+    switch (urgency) {
+      case 'High':
+        return 'urgency-high';
+      case 'Medium':
+        return 'urgency-medium';
+      case 'Low':
+        return 'urgency-low';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="volunteer-history-container">
       <h2>Volunteer History</h2>
-      <table border="1">
+      <table>
         <thead>
           <tr>
             <th>Event Name</th>
@@ -35,7 +50,11 @@ const VolunteerHistory = () => {
               <td>{entry.eventName}</td>
               <td>{entry.eventDescription}</td>
               <td>{entry.location}</td>
-              <td>{entry.urgency}</td>
+              <td>
+                <span className={getUrgencyClass(entry.urgency)}>
+                  {entry.urgency}
+                </span>
+              </td>
               <td>{entry.eventDate}</td>
               <td>{entry.participationStatus}</td>
             </tr>
