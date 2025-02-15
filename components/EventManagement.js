@@ -1,71 +1,73 @@
 import React, { useState } from "react";
+import "./EventManagement.css"; // Import CSS file
 
-const EventManagement = () => {
-    const [event, setEvent] = useState({
-        eventName: "",
-        eventDescription: "",
-        location: "",
-        requiredSkills: [],
-        urgency: "",
-        eventDate: ""
-    });
+function EventManagement() {
+  const [eventName, setEventName] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [skills, setSkills] = useState([]);
+  const [urgency, setUrgency] = useState("");
+  const [eventDate, setEventDate] = useState("");
 
-    const urgencyLevels = ["Low", "Medium", "High"];
-    const skillsList = ["First Aid", "Packing", "Assisting", "Event Management"];
+  return (
+    <div className="event-management-container">
+      <h2 className="text-3xl font-bold">Event Management</h2>
+      
+      <form className="event-form">
+        <label>Event Name</label>
+        <input 
+          type="text" 
+          value={eventName} 
+          onChange={(e) => setEventName(e.target.value)} 
+          placeholder="Enter Event Name"
+        />
 
-    const handleChange = (e) => {
-        setEvent({ ...event, [e.target.name]: e.target.value });
-    };
+        <label>Event Description</label>
+        <textarea 
+          value={eventDescription} 
+          onChange={(e) => setEventDescription(e.target.value)} 
+          placeholder="Enter Event Description"
+        />
 
-    const handleSkillChange = (e) => {
-        const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
-        setEvent({ ...event, requiredSkills: selectedSkills });
-    };
+        <label>Location</label>
+        <input 
+          type="text" 
+          value={location} 
+          onChange={(e) => setLocation(e.target.value)} 
+          placeholder="Enter Location"
+        />
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!event.eventName || !event.eventDescription || !event.location || event.requiredSkills.length === 0 || !event.urgency || !event.eventDate) {
-            alert("Please fill all required fields!");
-            return;
-        }
+        <label>Required Skills</label>
+        <select 
+          multiple 
+          value={skills} 
+          onChange={(e) => setSkills([...e.target.selectedOptions].map((opt) => opt.value))}
+        >
+          <option value="First Aid">First Aid</option>
+          <option value="Packing">Packing</option>
+          <option value="Assisting">Assisting</option>
+          <option value="Event Management">Event Management</option>
+        </select>
 
-        const existingEvents = JSON.parse(localStorage.getItem("events")) || [];
-        const updatedEvents = [...existingEvents, event];
-        localStorage.setItem("events", JSON.stringify(updatedEvents));
+        <label>Urgency</label>
+        <select value={urgency} onChange={(e) => setUrgency(e.target.value)}>
+          <option value="">Select Urgency</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
 
-        alert("Event Created!");
-    };
+        <label>Event Date</label>
+        <input 
+          type="date" 
+          value={eventDate} 
+          onChange={(e) => setEventDate(e.target.value)}
+        />
 
-    return (
-        <div>
-            <h2>Event Management</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="eventName" placeholder="Event Name" value={event.eventName} onChange={handleChange} required />
-                <textarea name="eventDescription" placeholder="Event Description" value={event.eventDescription} onChange={handleChange} required />
-                <input type="text" name="location" placeholder="Location" value={event.location} onChange={handleChange} required />
-
-                <label>Required Skills (Hold Ctrl/Cmd to select multiple):</label>
-                <select multiple name="requiredSkills" value={event.requiredSkills} onChange={handleSkillChange} required>
-                    {skillsList.map(skill => (
-                        <option key={skill} value={skill}>{skill}</option>
-                    ))}
-                </select>
-
-                <label>Urgency:</label>
-                <select name="urgency" value={event.urgency} onChange={handleChange} required>
-                    <option value="">Select Urgency</option>
-                    {urgencyLevels.map(level => (
-                        <option key={level} value={level}>{level}</option>
-                    ))}
-                </select>
-
-                <label>Event Date:</label>
-                <input type="date" name="eventDate" value={event.eventDate} onChange={handleChange} required />
-
-                <button type="submit">Create Event</button>
-            </form>
-        </div>
-    );
-};
+        <button type="submit" className="submit-button">Create Event</button>
+      </form>
+    </div>
+  );
+}
 
 export default EventManagement;
