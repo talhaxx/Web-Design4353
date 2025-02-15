@@ -1,88 +1,136 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import "./Profile.css"; // Ensure the CSS is imported
 
-const Profile = () => {
-    const navigate = useNavigate();
-    const [profile, setProfile] = useState(() => {
-        // Load profile data from localStorage
-        const storedProfile = localStorage.getItem("profile");
-        return storedProfile ? JSON.parse(storedProfile) : {
-            fullName: "",
-            address1: "",
-            address2: "",
-            city: "",
-            state: "",
-            zip: "",
-            skills: [],
-            preferences: "",
-            availability: []
-        };
-    });
+function Profile() {
+  const [fullName, setFullName] = useState("");
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [skills, setSkills] = useState([]);
+  const [preferences, setPreferences] = useState("");
+  const [availability, setAvailability] = useState("");
 
-    const [availableDates, setAvailableDates] = useState([]);
+  return (
+    <div className="profile-container">
+      <h2 className="profile-title">Profile Management Form</h2>
 
-    const states = ["TX", "CA", "NY", "FL", "IL", "LA"]; // Add more as needed
-    const skillsList = ["First Aid", "Packing", "Assisting", "Event Management"];
-
-    const handleChange = (e) => {
-        setProfile({ ...profile, [e.target.name]: e.target.value });
-    };
-
-    const handleSkillChange = (e) => {
-        const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
-        setProfile({ ...profile, skills: selectedSkills });
-    };
-
-    const handleAvailabilityChange = (date) => {
-        setAvailableDates([...availableDates, date]);
-        setProfile({ ...profile, availability: [...availableDates, date] });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!profile.fullName || !profile.address1 || !profile.city || !profile.state || !profile.zip || profile.skills.length === 0 || availableDates.length === 0) {
-            alert("Please fill in all required fields!");
-            return;
-        }
-        localStorage.setItem("profile", JSON.stringify(profile));
-        alert("Profile saved!");
-    };
-
-    return (
-        <div>
-            <h2>Profile Management</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="fullName" placeholder="Full Name" value={profile.fullName} onChange={handleChange} required />
-                <input type="text" name="address1" placeholder="Address 1" value={profile.address1} onChange={handleChange} required />
-                <input type="text" name="address2" placeholder="Address 2 (Optional)" value={profile.address2} onChange={handleChange} />
-                <input type="text" name="city" placeholder="City" value={profile.city} onChange={handleChange} required />
-                
-                <select name="state" value={profile.state} onChange={handleChange} required>
-                    <option value="">Select State</option>
-                    {states.map((state) => (
-                        <option key={state} value={state}>{state}</option>
-                    ))}
-                </select>
-                
-                <input type="text" name="zip" placeholder="Zip Code" value={profile.zip} onChange={handleChange} required />
-
-                <label>Skills (Hold Ctrl/Cmd to select multiple):</label>
-                <select multiple name="skills" value={profile.skills} onChange={handleSkillChange} required>
-                    {skillsList.map(skill => (
-                        <option key={skill} value={skill}>{skill}</option>
-                    ))}
-                </select>
-
-                <label>Preferences:</label>
-                <textarea name="preferences" value={profile.preferences} onChange={handleChange} />
-
-                <label>Availability (Select Dates):</label>
-                <input type="date" onChange={(e) => handleAvailabilityChange(e.target.value)} />
-                
-                <button type="submit">Save Profile</button>
-            </form>
+      <form className="profile-form">
+        {/* Full Name */}
+        <div className="form-group">
+          <label>Full Name</label>
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="John Doe"
+          />
         </div>
-    );
-};
+
+        {/* Address */}
+        <div className="form-group">
+          <label>Address 1</label>
+          <input
+            type="text"
+            value={address1}
+            onChange={(e) => setAddress1(e.target.value)}
+            placeholder="1234 Park Avenue"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Address 2 (Optional)</label>
+          <input
+            type="text"
+            value={address2}
+            onChange={(e) => setAddress2(e.target.value)}
+            placeholder="Apartment, Suite, etc."
+          />
+        </div>
+
+        {/* City & State */}
+        <div className="form-group">
+          <label>City</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Houston"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Select State</label>
+          <select value={state} onChange={(e) => setState(e.target.value)}>
+            <option value="">Select State</option>
+            <option value="TX">Texas</option>
+            <option value="NY">New York</option>
+            <option value="CA">California</option>
+          </select>
+        </div>
+
+        {/* Zip Code */}
+        <div className="form-group">
+          <label>Zip Code</label>
+          <input
+            type="text"
+            className={`zip-input ${
+              zipCode.length > 0 && !/^\d{5,9}$/.test(zipCode)
+                ? "error-border"
+                : ""
+            }`}
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            placeholder="Enter Zip Code"
+          />
+          {zipCode.length > 0 && !/^\d{5,9}$/.test(zipCode) && (
+            <p className="error-text">Invalid zip code</p>
+          )}
+        </div>
+
+        {/* Skills (Multi-Select) */}
+        <div className="form-group">
+          <label>Select Skills</label>
+          <select
+            multiple
+            value={skills}
+            onChange={(e) =>
+              setSkills([...e.target.selectedOptions].map((opt) => opt.value))
+            }
+          >
+            <option value="First Aid">First Aid</option>
+            <option value="Packing">Packing</option>
+            <option value="Assisting">Assisting</option>
+            <option value="Event Management">Event Management</option>
+          </select>
+        </div>
+
+        {/* Preferences */}
+        <div className="form-group">
+          <label>Preferences</label>
+          <textarea
+            value={preferences}
+            onChange={(e) => setPreferences(e.target.value)}
+            placeholder="Enter your preferences"
+          />
+        </div>
+
+        {/* Availability (Date Picker) */}
+        <div className="form-group">
+          <label>Availability</label>
+          <input
+            type="date"
+            value={availability}
+            onChange={(e) => setAvailability(e.target.value)}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button className="submit-button">Save Profile</button>
+      </form>
+    </div>
+  );
+}
 
 export default Profile;
