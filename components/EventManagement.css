@@ -1,0 +1,80 @@
+/* EventManagement.css - Ensures form fields are stacked from top to bottom */
+
+.event-management-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .event-management-container h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .event-form label {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .event-form input,
+  .event-form textarea,
+  .event-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .event-form textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .event-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .event-form button:hover {
+    background-color: #45a049;
+  }
+  
+  .event-form .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Align skills dropdown properly */
+  .event-form .skills-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .event-form .date-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
