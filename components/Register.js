@@ -1,71 +1,27 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
+import { useState } from "react";
 
-const Register = () => {
-    const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
-    
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    const handleRegistration = (e) => {
-        e.preventDefault();
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
+      <form className="bg-white p-6 rounded-lg shadow-md w-96">
+        <label className="block text-gray-700 mb-1">Email</label>
+        <input type="email" className="border rounded p-2 w-full mb-3" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            return;
-        }
+        <label className="block text-gray-700 mb-1">Password</label>
+        <input type="password" className="border rounded p-2 w-full mb-3" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        // Automatically assign admin role if email is 'admin@gmail.com'
-        const role = email === "admin@gmail.com" ? "admin" : "volunteer";
+        <label className="block text-gray-700 mb-1">Confirm Password</label>
+        <input type="password" className="border rounded p-2 w-full mb-3" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
 
-        const userData = { email, password, role };
-
-        // Store user data (this simulates a database)
-        localStorage.setItem(`user_${email}`, JSON.stringify(userData));
-
-        // Log in immediately after registration
-        login(email, role);
-
-        // Redirect based on role
-        if (role === "admin") {
-            navigate("/events");
-        } else {
-            navigate("/profile");
-        }
-    };
-
-    return (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-            <h2>Sign Up</h2>
-            <form onSubmit={handleRegistration}>
-                <input 
-                    type="email" 
-                    placeholder="Email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    required 
-                />
-                <input 
-                    type="password" 
-                    placeholder="Password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                />
-                <input 
-                    type="password" 
-                    placeholder="Confirm Password" 
-                    value={confirmPassword} 
-                    onChange={(e) => setConfirmPassword(e.target.value)} 
-                    required 
-                />
-                <button type="submit">Sign Up</button>
-            </form>
-        </div>
-    );
-};
+        <button className="bg-green-500 text-white px-4 py-2 rounded w-full">Sign Up</button>
+      </form>
+    </div>
+  );
+}
 
 export default Register;
