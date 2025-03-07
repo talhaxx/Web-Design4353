@@ -1,44 +1,39 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
+import { loginUser } from "../services/api";
+ // Import API function
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        setError("");
 
-        // Retrieve user data from localStorage
-        const storedUser = localStorage.getItem(`user_${email}`);
-
-        if (!storedUser) {
-            alert("User not found. Please sign up first.");
-            return;
-        }
-
-        const userData = JSON.parse(storedUser);
-
-        if (userData.password !== password) {
-            alert("Incorrect password. Try again.");
-            return;
-        }
-
-        login(userData.email, userData.role);
-
-        // Redirect based on role
-        if (userData.role === "admin") {
-            navigate("/events");
-        } else {
-            navigate("/profile");
+        try {
+            const response = await loginUser(email, password);
+            login(response.data.user.email, response.data.user.role);
+            
+            // Redirect based on role
+            if (response.data.user.role === "admin") {
+                navigate("/events");
+            } else {
+                navigate("/profile");
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Login failed");
         }
     };
 
     return (
         <div style={{ textAlign: "center", padding: "20px" }}>
             <h2>Login</h2>
+            {error && <p className="error-text">{error}</p>}
             <form onSubmit={handleLogin}>
                 <input 
                     type="email" 
@@ -62,4 +57,3 @@ const Login = () => {
 };
 
 export default Login;
-
