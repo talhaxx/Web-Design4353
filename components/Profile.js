@@ -25,10 +25,11 @@ function Profile() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="John Doe"
+            required
           />
         </div>
 
-        {/* Address */}
+        {/* Address 1 */}
         <div className="form-group">
           <label>Address 1</label>
           <input
@@ -36,9 +37,11 @@ function Profile() {
             value={address1}
             onChange={(e) => setAddress1(e.target.value)}
             placeholder="1234 Park Avenue"
+            required
           />
         </div>
 
+        {/* Address 2 (Optional) */}
         <div className="form-group">
           <label>Address 2 (Optional)</label>
           <input
@@ -49,7 +52,7 @@ function Profile() {
           />
         </div>
 
-        {/* City & State */}
+        {/* City */}
         <div className="form-group">
           <label>City</label>
           <input
@@ -57,12 +60,14 @@ function Profile() {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Houston"
+            required
           />
         </div>
 
+        {/* State Dropdown */}
         <div className="form-group">
           <label>Select State</label>
-          <select value={state} onChange={(e) => setState(e.target.value)}>
+          <select value={state} onChange={(e) => setState(e.target.value)} required>
             <option value="">Select State</option>
             <option value="TX">Texas</option>
             <option value="NY">New York</option>
@@ -76,20 +81,19 @@ function Profile() {
           <input
             type="text"
             className={`zip-input ${
-              zipCode.length > 0 && !/^\d{5,9}$/.test(zipCode)
-                ? "error-border"
-                : ""
+              zipCode.length > 0 && !/^\d{5,9}$/.test(zipCode) ? "error-border" : ""
             }`}
             value={zipCode}
             onChange={(e) => setZipCode(e.target.value)}
             placeholder="Enter Zip Code"
+            required
           />
           {zipCode.length > 0 && !/^\d{5,9}$/.test(zipCode) && (
             <p className="error-text">Invalid zip code</p>
           )}
         </div>
 
-        {/* Skills (Multi-Select) */}
+        {/* Skills Multi-Select */}
         <div className="form-group">
           <label>Select Skills</label>
           <select
@@ -98,6 +102,7 @@ function Profile() {
             onChange={(e) =>
               setSkills([...e.target.selectedOptions].map((opt) => opt.value))
             }
+            required
           >
             <option value="First Aid">First Aid</option>
             <option value="Packing">Packing</option>
@@ -116,13 +121,14 @@ function Profile() {
           />
         </div>
 
-        {/* Availability (Date Picker) */}
+        {/* Availability Date Picker */}
         <div className="form-group">
           <label>Availability</label>
           <input
             type="date"
             value={availability}
             onChange={(e) => setAvailability(e.target.value)}
+            required
           />
         </div>
 
@@ -134,3 +140,4 @@ function Profile() {
 }
 
 export default Profile;
+
