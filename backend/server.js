@@ -35,6 +35,7 @@ const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const matchRoutes = require('./routes/matchRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const stateRoutes = require('./routes/stateRoutes');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -42,6 +43,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/states', stateRoutes);
 
 // 404 handler
 app.use((req, res, next) => {

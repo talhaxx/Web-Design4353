@@ -93,6 +93,24 @@ export const matchVolunteers = async (eventId) => {
     return await api.post(`/match/${eventId}`);
 };
 
+export const assignVolunteer = async (eventId, userId) => {
+    return await api.post('/match/assign', { eventId, userId });
+};
+
+export const fetchVolunteerHistory = async (userId = null) => {
+    const url = userId ? `/match/user/${userId}` : '/match';
+    return await api.get(url);
+};
+
+// Notification Services
+export const fetchNotifications = async () => {
+    return await api.get('/notifications');
+};
+
+export const markNotificationRead = async (notificationId) => {
+    return await api.put(`/notifications/${notificationId}/read`);
+};
+
 // Other services can be added as needed
 
 export default api;
