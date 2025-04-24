@@ -28,21 +28,30 @@ function EventManagement() {
     "Administration"
   ];
 
+  // Function to load events
+  const getEvents = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      console.log("Fetching events...");
+      const response = await fetchEvents();
+      console.log("Fetched events:", response.data);
+      
+      if (response.data && Array.isArray(response.data)) {
+        setEvents(response.data);
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (err) {
+      console.error("Error fetching events:", err);
+      setError("Failed to load events. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch existing events
   useEffect(() => {
-    const getEvents = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchEvents();
-        setEvents(response.data);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-        setError("Failed to load events. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getEvents();
   }, []);
 
@@ -90,6 +99,9 @@ function EventManagement() {
     }
 
     try {
+      setLoading(true);
+      setError("");
+      
       const eventData = {
         name: eventName,
         description: eventDescription,
@@ -99,7 +111,9 @@ function EventManagement() {
         eventDate
       };
 
-      await createEvent(eventData);
+      console.log("Creating event with data:", eventData);
+      const response = await createEvent(eventData);
+      console.log("Event creation response:", response);
       
       // Clear form fields
       setEventName("");
@@ -114,11 +128,12 @@ function EventManagement() {
       setTimeout(() => setSuccess(""), 3000);
       
       // Refresh event list
-      const response = await fetchEvents();
-      setEvents(response.data);
+      await getEvents();
     } catch (err) {
       console.error("Error creating event:", err);
       setError("Failed to create event. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,7 +141,16 @@ function EventManagement() {
     <div className="event-management-container">
       <h2 className="event-title">Event Management</h2>
       
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          {error}
+          {error.includes("Failed to load events") && (
+            <button className="retry-button" onClick={getEvents}>
+              Retry
+            </button>
+          )}
+        </div>
+      )}
       {success && <div className="success-message">{success}</div>}
 
       <div className="event-content">
@@ -216,7 +240,9 @@ function EventManagement() {
             />
           </div>
 
-          <button type="submit" className="submit-button">Create Event</button>
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? "Creating..." : "Create Event"}
+          </button>
         </form>
 
         <div className="events-list">

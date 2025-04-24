@@ -33,11 +33,9 @@ app.get('/', (req, res) => {
     res.send('Volunteer Management API is running');
 });
 
-// Add middleware to handle requests without the /api prefix
-// This is a temporary fix for clients that might be using the wrong URL
+// Temporary redirect middleware for legacy /auth/* paths
 app.use('/auth/*', (req, res, next) => {
     console.log('Redirecting from /auth/* to /api/auth/*');
-    // Forward the request to the correct route
     req.url = '/api' + req.url;
     next('route');
 });
@@ -50,18 +48,40 @@ const matchRoutes = require('./routes/matchRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const stateRoutes = require('./routes/stateRoutes');
 
-// API Routes
+// Register API Routes
+console.log('Registering API routes...');
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/match', matchRoutes);
+
+// Log match routes
+console.log('Match Routes available:');
+if (matchRoutes.stack) {
+    matchRoutes.stack.forEach((layer) => {
+        if (layer.route) {
+            const path = layer.route.path;
+            const methods = Object.keys(layer.route.methods).map(m => m.toUpperCase()).join(',');
+            console.log(`${methods} /api/match${path}`);
+        }
+    });
+}
+app.use('/api/match', matchRoutes); // ✅ mount match routes correctly
+
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/states', stateRoutes);
+console.log('API routes registered successfully');
 
-// Add debug information to 404 responses
+// 🔁 404 route should remain at the very end
 app.use((req, res, next) => {
     console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
-    res.status(404).json({ 
+
+    // Match-specific debug
+    if (req.originalUrl.includes('/match/assign')) {
+        console.log('Requested match/assign route but not found!');
+        console.log('Available match routes:', Object.keys(matchRoutes.stack || {}).map(key => matchRoutes.stack[key]?.route?.path).filter(Boolean));
+    }
+
+    res.status(404).json({
         message: 'Route not found',
         requested: {
             method: req.method,
@@ -80,7 +100,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`API available at: http://localhost:${PORT}/api`);
@@ -89,6 +109,5 @@ app.listen(PORT, () => {
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
-    // Ideally log to a service like Sentry here
     process.exit(1);
 });

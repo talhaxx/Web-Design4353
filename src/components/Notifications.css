@@ -1,3 +1,244 @@
+.notifications-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.notifications-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.notifications-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.notifications-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    color: #333;
+    margin: 15px 0;
+    padding: 0 20px;
+}
+
+.notifications-list {
+    padding: 0 20px 20px;
+}
+
+.notification-card {
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 3px solid #ddd;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-card:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.notification-card.unread {
+    background: #f0f7ff;
+    border-left-color: #4a90e2;
+}
+
+.notification-card.upcoming-event {
+    background: #f0fff4;
+    border-left-color: #38a169;
+}
+
+/* Notification type styling */
+.notification-card.match {
+    border-left-color: #805ad5;
+}
+
+.notification-card.match .notification-type {
+    color: #805ad5;
+}
+
+.notification-card.interest {
+    border-left-color: #3182ce;
+}
+
+.notification-card.interest .notification-type {
+    color: #3182ce;
+}
+
+.notification-card.volunteer-interest {
+    border-left-color: #38b2ac;
+}
+
+.notification-card.volunteer-interest .notification-type {
+    color: #38b2ac;
+}
+
+.notification-card.reminder {
+    border-left-color: #dd6b20;
+}
+
+.notification-card.reminder .notification-type {
+    color: #dd6b20;
+}
+
+.notification-card.approval {
+    border-left-color: #38a169;
+}
+
+.notification-card.approval .notification-type {
+    color: #38a169;
+}
+
+.notification-card.welcome {
+    border-left-color: #3182ce;
+}
+
+.notification-card.welcome .notification-type {
+    color: #3182ce;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.notification-type {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a90e2;
+    text-transform: uppercase;
+}
+
+.notification-date {
+    font-size: 12px;
+    color: #666;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.unread-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #4a90e2;
+}
+
+.no-notifications {
+    padding: 15px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #4a90e2;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.mark-all-read-btn:hover {
+    background: #f0f7ff;
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: #fff1f0;
+    border: 1px solid #ffccc7;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #cf1322;
+}
+
+.success-message {
+    background-color: #f0fff4;
+    border: 1px solid #c6f6d5;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #2f855a;
+}
+
+.loading-text {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Sample notification button container */
+.sample-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f7fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e0;
+}
+
+.sample-notifications-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sample-notifications-btn:hover {
+    background-color: #3182ce;
+}
+
+.sample-notifications-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+}
+
+.sample-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #718096;
+    text-align: center;
+}
+
+/* For bell icon in NavBar */
 .notifications-container {
     position: relative;
     display: inline-block;
@@ -32,6 +273,7 @@
     padding: 5px 0;
     cursor: pointer;
 }
+
 .badge {
     background-color: red;
     color: white;
@@ -39,5 +281,20 @@
     padding: 5px 10px;
     font-size: 12px;
     margin-left: 5px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .notifications-page {
+        padding: 10px;
+    }
+    
+    .notification-card {
+        padding: 12px;
+    }
+    
+    .notification-message {
+        font-size: 13px;
+    }
 }
 

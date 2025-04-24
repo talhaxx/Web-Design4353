@@ -1,0 +1,99 @@
+.event-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.event-title {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+}
+
+.event-date, .event-location, .event-skills {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.event-urgency {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.urgency-1 { background-color: #e3f8e7; color: #2e7d32; }
+.urgency-2 { background-color: #e8f5e9; color: #388e3c; }
+.urgency-3 { background-color: #fff8e1; color: #f57f17; }
+.urgency-4 { background-color: #fff3e0; color: #e65100; }
+.urgency-5 { background-color: #ffebee; color: #c62828; }
+
+.express-interest-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.express-interest-btn:hover {
+  background-color: #2980b9;
+}
+
+.express-interest-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+}
+
+@media (max-width: 768px) {
+  .event-card {
+    padding: 12px;
+  }
+  
+  .event-title {
+    font-size: 1.1rem;
+  }
+  
+  .event-date, .event-location, .event-skills {
+    font-size: 0.9rem;
+  }
+}
+
+.interest-badge {
+  background-color: #e0f7fa;
+  color: #00838f;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  border: 1px solid #b2ebf2;
+}
+
+.interest-badge span {
+  margin-right: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #009688;
+} 

@@ -36,6 +36,22 @@ const AdminVolunteers = () => {
             
             console.log('Processed volunteers data:', volunteersData);
             
+            // If still no data, try fetching from UserProfile table directly
+            if (volunteersData.length === 0) {
+                try {
+                    // Fetch directly from UserProfile
+                    const userProfileResponse = await fetch('http://localhost:5001/api/users/profiles');
+                    const profileData = await userProfileResponse.json();
+                    console.log('User profile data:', profileData);
+                    
+                    if (Array.isArray(profileData) && profileData.length > 0) {
+                        volunteersData = profileData;
+                    }
+                } catch (profileError) {
+                    console.error('Error fetching user profiles:', profileError);
+                }
+            }
+            
             // Check if data is empty
             if (volunteersData.length === 0) {
                 console.warn('No volunteers found in API response.');
@@ -145,7 +161,7 @@ const AdminVolunteers = () => {
 
     return (
         <div className="admin-volunteers-container">
-            <h2 className="page-title">Volunteer Database</h2>
+            <h2 className="page-title">Volunteer History</h2>
             
             {error && (
                 <div className="error-message">

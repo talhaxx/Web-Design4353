@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { sendNotification } from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -8,21 +9,50 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Initialize auth state from localStorage
+    // On mount, check if we have a user in localStorage
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
+        const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('token');
         
         if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
             
             // Set axios default authorization header
             axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+
+            // Create welcome notification if first login
+            if (!localStorage.getItem(`welcomed_${parsedUser.email}`)) {
+                createWelcomeNotifications(parsedUser.email);
+            }
         }
         
         setLoading(false);
     }, []);
+
+    // Create welcome notifications for new users
+    const createWelcomeNotifications = async (email) => {
+        try {
+            // Create welcome notification
+            await sendNotification(
+                email,
+                "Welcome to Matchbook! We're excited to have you join our community. Start by exploring available volunteer opportunities or completing your profile.",
+                "welcome"
+            );
+            
+            // Create a tip notification
+            await sendNotification(
+                email,
+                "Tip: Fill out your skills and availability in your profile to get better matches for volunteer opportunities.",
+                "general"
+            );
+            
+            // Mark that we've welcomed this user
+            localStorage.setItem(`welcomed_${email}`, 'true');
+        } catch (error) {
+            console.error("Error creating welcome notifications:", error);
+        }
+    };
 
     const login = (userData, authToken) => {
         // Store user and token in state
@@ -35,6 +65,11 @@ export const AuthProvider = ({ children }) => {
         
         // Set axios default header for all future requests
         axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+
+        // Create welcome notification if first login
+        if (!localStorage.getItem(`welcomed_${userData.email}`)) {
+            createWelcomeNotifications(userData.email);
+        }
     };
 
     const logout = () => {
@@ -52,7 +87,15 @@ export const AuthProvider = ({ children }) => {
 
     // Check if user is authenticated
     const isAuthenticated = () => {
-        return !!user && !!token;
+        // First check component state
+        if (user && token) {
+            return true;
+        }
+        
+        // If not in state, check localStorage (useful during page reloads)
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
+        return storedUser && storedToken ? true : false;
     };
 
     return (

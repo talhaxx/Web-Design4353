@@ -31,6 +31,9 @@
     margin-bottom: 20px;
     font-weight: 500;
     border-left: 4px solid #e74c3c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .success-message {
@@ -137,6 +140,27 @@
 
 .submit-button:hover {
     background-color: #2980b9;
+}
+
+.retry-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+}
+
+.retry-button:hover {
+    background-color: #c0392b;
+}
+
+.submit-button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
 }
 
 .events-list {

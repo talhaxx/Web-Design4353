@@ -32,10 +32,43 @@
     border-left: 4px solid #e53e3e;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .error-message svg {
     margin-right: 8px;
+}
+
+/* Retry button within error message */
+.error-message .find-matches-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-left: 10px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.error-message .find-matches-btn:hover {
+    background-color: #c53030;
+    transform: scale(1.05);
+}
+
+.error-message .find-matches-btn svg {
+    margin-right: 6px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .success-message {

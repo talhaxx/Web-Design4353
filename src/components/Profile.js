@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import { fetchUserProfile, updateUserProfile } from "../services/api";
 import "./Profile.css"; // Ensure the CSS is imported
+import api from '../services/api';
 
 function Profile() {
   const { user } = useContext(AuthContext);
@@ -39,10 +40,11 @@ function Profile() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch states from the database
-        const response = await fetch("http://localhost:5001/api/states");
-        const statesData = await response.json();
-        setStates(statesData);
+        // Fetch states from the API
+        const response = await api.get('/states');
+        if (response.data && Array.isArray(response.data)) {
+          setStates(response.data);
+        }
 
         // Fetch user profile if logged in
         if (user && user.email) {

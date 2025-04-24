@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "./AuthContext";
-import axios from 'axios';
 import './VolunteerHistory.css';
+import { fetchVolunteerHistory } from '../services/api';
 
 const VolunteerHistory = () => {
   const { user } = useContext(AuthContext);
@@ -9,35 +9,40 @@ const VolunteerHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchVolunteerHistory = async () => {
-      try {
-        setLoading(true);
-        
-        let url = 'http://localhost:5001/api/match';
-        
-        // If user is a volunteer, only fetch their history
-        if (user && user.role === 'volunteer') {
-          url += `/user/${user.id}`;
-        }
-        
-        const response = await axios.get(url, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        setHistoryData(response.data);
-      } catch (err) {
-        console.error('Error fetching volunteer history:', err);
-        setError('Failed to load volunteer history. Please try again later.');
-      } finally {
-        setLoading(false);
+  // Define fetchData outside useEffect so it can be reused
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      let response;
+      if (user && user.role === 'volunteer') {
+        response = await fetchVolunteerHistory(user.id);
+      } else {
+        response = await fetchVolunteerHistory();
       }
-    };
+      
+      console.log('Volunteer history response:', response);
+      
+      if (response && response.data) {
+        setHistoryData(response.data);
+      } else {
+        throw new Error('No data received from API');
+      }
+    } catch (error) {
+      console.error('Error fetching volunteer history:', error);
+      setError('Failed to load volunteer history. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchVolunteerHistory();
+  useEffect(() => {
+    fetchData();
   }, [user]);
+
+  // Function to retry loading data
+  const handleRetry = () => {
+    fetchData();
+  };
 
   // Function to format date
   const formatDate = (dateString) => {
@@ -68,8 +73,16 @@ const VolunteerHistory = () => {
   return (
     <div className="volunteer-history-container">
       <h2 className="history-title">Volunteer History</h2>
+      <p className="history-description">View all volunteer participation records and their details.</p>
       
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          {error}
+          <button className="retry-button" onClick={handleRetry}>
+            Retry
+          </button>
+        </div>
+      )}
       
       {loading ? (
         <p className="loading-text">Loading volunteer history...</p>
@@ -87,22 +100,34 @@ const VolunteerHistory = () => {
                 <th>Urgency</th>
                 <th>Event Date</th>
                 <th>Participation Date</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {historyData.map(entry => (
-                <tr key={entry.VolunteerID}>
+              {historyData.map((entry, index) => (
+                <tr key={entry.VolunteerID || index}>
                   <td>{entry.EventName}</td>
-                  {user?.role === 'admin' && <td>{entry.VolunteerName || entry.VolunteerEmail}</td>}
+                  {user?.role === 'admin' && <td>{entry.VolunteerName || entry.VolunteerEmail || 'Unknown'}</td>}
                   <td>{entry.Location}</td>
-                  <td>{entry.RequiredSkills}</td>
                   <td>
-                    <span className={getUrgencyClass(entry.Urgency)}>
+                    <div className="skills-list">
+                      {entry.RequiredSkills && entry.RequiredSkills.split(',').map((skill, i) => (
+                        <span key={i} className="skill-tag">{skill.trim()}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`urgency-badge ${getUrgencyClass(entry.Urgency)}`}>
                       {entry.Urgency}
                     </span>
                   </td>
                   <td>{formatDate(entry.EventDate)}</td>
                   <td>{formatDate(entry.ParticipationDate)}</td>
+                  <td>
+                    <span className="status-badge active">
+                      Participated
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

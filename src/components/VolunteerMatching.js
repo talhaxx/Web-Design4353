@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { fetchEvents, matchVolunteers, assignVolunteer } from "../services/api";
+import { fetchEvents, matchVolunteers, assignVolunteer, sendNotification } from "../services/api";
 import './VolunteerMatching.css';
 
 const VolunteerMatching = () => {
-    const [volunteers, setVolunteers] = useState([]);
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState("");
     const [matchedVolunteers, setMatchedVolunteers] = useState([]);
@@ -56,51 +55,107 @@ const VolunteerMatching = () => {
             setError("");
             
             console.log("Finding matches for event:", eventId);
-            // Get matched volunteers from API
-            const response = await matchVolunteers(eventId);
-            console.log("Matched volunteers:", response.data);
             
-            if (response.data && Array.isArray(response.data)) {
-                setMatchedVolunteers(response.data);
+            // Get matched volunteers from API with improved error handling
+            try {
+                const response = await matchVolunteers(eventId);
+                console.log("Matched volunteers:", response.data);
                 
-                if (response.data.length === 0) {
-                    setError("No matching volunteers found for this event.");
+                if (response.data && Array.isArray(response.data)) {
+                    setMatchedVolunteers(response.data);
+                    
+                    if (response.data.length === 0) {
+                        setError("No matching volunteers found for this event.");
+                    } else {
+                        // Clear any previous errors if we got results
+                        setError("");
+                    }
+                } else {
+                    console.warn("Invalid response format from matchVolunteers");
+                    setError("Received invalid data format from server.");
                 }
-            } else {
-                setError("Invalid response from server.");
+            } catch (matchError) {
+                console.error("Error in matchVolunteers call:", matchError);
+                setError("Failed to match volunteers. Using fallback data.");
+                
+                // We'll still have fallback data from our enhanced matchVolunteers function
+                // Just make sure we don't leave the user with an empty interface
+                if (matchedVolunteers.length === 0) {
+                    setMatchedVolunteers([]);
+                }
             }
         } catch (err) {
-            console.error("Error matching volunteers:", err);
-            setError("Failed to match volunteers. Please try again.");
-            setMatchedVolunteers([]);
+            console.error("Error in handleEventSelect:", err);
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAssignVolunteer = async (volunteerId) => {
-        if (!selectedEvent || !volunteerId) {
-            setError("Please select both an event and a volunteer.");
+    const handleAssignVolunteer = async (eventId, volunteerId) => {
+        console.log("Preparing to assign volunteer", volunteerId, "to event", eventId);
+        
+        if (!volunteerId || !eventId) {
+            setError("Please select both an event and a volunteer");
             return;
         }
-
+        
         try {
             setLoading(true);
-            setError("");
             
-            console.log(`Assigning volunteer ${volunteerId} to event ${selectedEvent}`);
-            // Call API to assign volunteer using the service function
-            const response = await assignVolunteer(selectedEvent, volunteerId);
-            console.log("Assignment response:", response);
+            // Use the updated endpoint
+            const response = await assignVolunteer(eventId, volunteerId);
             
-            setSuccess("Volunteer assigned successfully!");
-            setTimeout(() => setSuccess(""), 3000);
-            
-            // Refresh matches after assignment
-            await handleEventSelect(selectedEvent);
+            if (response.data.success) {
+                const selectedVolunteer = matchedVolunteers.find(v => v.ID === volunteerId);
+                const selectedEvent = events.find(e => e.EventID === eventId);
+                
+                if (selectedVolunteer && selectedEvent) {
+                    // Create a server-side notification for this specific volunteer
+                    try {
+                        // Get the volunteer's user ID and email
+                        const volunteerId = selectedVolunteer.ID;
+                        const volunteerEmail = selectedVolunteer.Email;
+                        const volunteerName = selectedVolunteer.FullName;
+                        const eventName = selectedEvent.EventName;
+                        
+                        // Store notification with volunteer identifier for volunteer UI
+                        const userSpecificNotifications = JSON.parse(localStorage.getItem(`notifications_${volunteerEmail}`) || "[]");
+                        userSpecificNotifications.push({
+                            message: `You have been assigned to event: ${eventName}`,
+                            date: new Date().toISOString(),
+                            read: false,
+                            forVolunteer: volunteerEmail, // Store the target volunteer
+                            type: "assignment"
+                        });
+                        
+                        // Save notification specifically for this volunteer
+                        localStorage.setItem(`notifications_${volunteerEmail}`, JSON.stringify(userSpecificNotifications));
+                        
+                        // Send notification to admin database
+                        await sendNotification(
+                            "admin@matchbook.com", // Admin email
+                            `Volunteer ${volunteerName} has been assigned to event: ${eventName}`,
+                            "assignment"
+                        );
+                        
+                        console.log(`Notification created for volunteer: ${volunteerEmail} and admin`);
+                    } catch (notifError) {
+                        console.error("Error creating notification:", notifError);
+                    }
+                }
+                
+                setSuccess("Volunteer assigned successfully!");
+                setTimeout(() => setSuccess(""), 3000);
+                
+                // Refresh matches after assignment
+                await handleEventSelect(selectedEvent);
+            } else {
+                setError("Failed to assign volunteer. Please try again.");
+            }
         } catch (err) {
             console.error("Error assigning volunteer:", err);
-            setError("Failed to assign volunteer. Please try again.");
+            setError(`Failed to assign volunteer: ${err.message || 'Unknown error'}. Please try again.`);
         } finally {
             setLoading(false);
         }
@@ -144,7 +199,18 @@ const VolunteerMatching = () => {
                                 <path d="M3 22v-6h6"></path>
                                 <path d="M21 12a9 9 0 0 1-15 6.7l-3 3"></path>
                             </svg>
-                            Retry
+                            Retry Loading Events
+                        </button>
+                    )}
+                    {(error.includes("Failed to match volunteers") || error.includes("match volunteers")) && selectedEvent && (
+                        <button className="find-matches-btn" onClick={() => handleEventSelect(selectedEvent)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 2v6h-6"></path>
+                                <path d="M3 12a9 9 0 0 1 15-6.7l3-3"></path>
+                                <path d="M3 22v-6h6"></path>
+                                <path d="M21 12a9 9 0 0 1-15 6.7l-3 3"></path>
+                            </svg>
+                            Retry Matching
                         </button>
                     )}
                 </div>
@@ -169,8 +235,8 @@ const VolunteerMatching = () => {
                         {events.map((event) => (
                             <div 
                                 key={event.EventID} 
-                                className={`event-card ${selectedEvent === event.EventID.toString() ? 'selected' : ''}`}
-                                onClick={() => selectEventCard(event.EventID.toString())}
+                                className={`event-card ${selectedEvent === event.EventID ? 'selected' : ''}`}
+                                onClick={() => selectEventCard(event.EventID)}
                             >
                                 <h4 className="event-name">{event.EventName}</h4>
                                 <p className="event-details"><strong>Date:</strong> {formatDate(event.EventDate)}</p>
@@ -228,7 +294,7 @@ const VolunteerMatching = () => {
                                     
                                     <button 
                                         className="assign-btn"
-                                        onClick={() => handleAssignVolunteer(volunteer.ID)}
+                                        onClick={() => handleAssignVolunteer(selectedEvent, volunteer.ID)}
                                         disabled={loading}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

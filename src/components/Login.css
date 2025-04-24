@@ -3,77 +3,141 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(to bottom, #4A90E2, #50E3C2);
-    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    background-color: #f5f5f5;
 }
 
-/* Form Box */
-.login-form {
+.login-form-container {
     background: white;
-    padding: 2.5rem;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form-container h2 {
     text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.login-form:hover {
-    transform: scale(1.02);
-}
-
-/* Header */
-.login-form h2 {
-    margin-bottom: 1rem;
-    font-size: 26px;
-    font-weight: bold;
+    margin-bottom: 20px;
     color: #333;
 }
 
-/* Input Fields */
-.login-form input {
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input {
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 16px;
-    transition: all 0.3s ease-in-out;
 }
 
-.login-form input:focus {
-    border-color: #4A90E2;
-    outline: none;
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
-}
-
-/* Login Button */
-.login-form button {
+.login-button {
     width: 100%;
     padding: 12px;
-    background: #4A90E2;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 18px;
+    border-radius: 4px;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #45a049;
+}
+
+.login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #d32f2f;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.register-link {
+    text-align: center;
     margin-top: 15px;
-    transition: background 0.3s ease;
 }
 
-.login-form button:hover {
-    background: #357ABD;
+.register-link a {
+    color: #2196F3;
+    text-decoration: none;
 }
 
-/* Error Message */
-.error-text {
-    color: red;
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Admin Login Specific Styles */
+.admin-login {
+    background-color: #263238;
+}
+
+.admin-login .login-form-container {
+    border-top: 5px solid #f44336;
+}
+
+.admin-login h2 {
+    color: #f44336;
+}
+
+.admin-subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #455a64;
+}
+
+.admin-login-button {
+    background-color: #f44336;
+}
+
+.admin-login-button:hover {
+    background-color: #d32f2f;
+}
+
+.admin-note {
+    text-align: center;
+    margin-top: 15px;
     font-size: 14px;
-    margin-bottom: 10px;
+}
+
+.admin-note a {
+    color: #90a4ae;
+    text-decoration: none;
+}
+
+.admin-note a:hover {
+    text-decoration: underline;
+}
+
+/* Admin link in regular login */
+.admin-link {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.admin-link a {
+    color: #9e9e9e;
+    text-decoration: none;
+}
+
+.admin-link a:hover {
+    text-decoration: underline;
 }
 
 /* Responsive Design */
@@ -82,4 +146,33 @@
         width: 90%;
         padding: 2rem;
     }
+}
+
+.debug-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.debug-info h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.debug-info pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #f1f3f5;
+    padding: 10px;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
 }
