@@ -1,0 +1,385 @@
+.admin-volunteers-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 25px;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.filter-container {
+  min-width: 200px;
+}
+
+.skill-filter {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.skill-filter:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 30px;
+}
+
+.loading-text {
+  color: #7f8c8d;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  background-color: #ffeaea;
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  border-left: 4px solid #e74c3c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.retry-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.retry-button:hover {
+  background-color: #c0392b;
+}
+
+/* Volunteer grid */
+.volunteers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.volunteer-card {
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #e1e8ed;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.volunteer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-name {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.volunteer-details p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.volunteer-details strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(52, 152, 219, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 8px;
+}
+
+.card-overlay span {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.volunteer-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #e1f5e4;
+  color: #27ae60;
+}
+
+.status-badge.inactive {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+/* Volunteer detail view */
+.volunteer-detail-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+}
+
+.back-button-container {
+  margin-bottom: 20px;
+}
+
+.back-button {
+  background-color: transparent;
+  color: #3498db;
+  border: none;
+  padding: 6px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.back-button:hover {
+  color: #2980b9;
+}
+
+.volunteer-profile {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-detail-name {
+  color: #2c3e50;
+  font-size: 22px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.volunteer-detail-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.info-section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.info-section p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.info-section strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.volunteer-history-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-history-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.history-table th {
+  background-color: #f1f6fb;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.history-table tr:hover {
+  background-color: #f1f9ff;
+}
+
+.no-history {
+  text-align: center;
+  padding: 20px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.urgency-level {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 32px;
+}
+
+.urgency-1 {
+  background-color: #e8f4fd;
+  color: #3498db;
+}
+
+.urgency-2 {
+  background-color: #e1f5e4;
+  color: #27ae60;
+}
+
+.urgency-3 {
+  background-color: #fff7e1;
+  color: #f39c12;
+}
+
+.urgency-4 {
+  background-color: #fdede4;
+  color: #e67e22;
+}
+
+.urgency-5 {
+  background-color: #fde4e1;
+  color: #e74c3c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-volunteers-container {
+    padding: 15px;
+  }
+  
+  .volunteers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .volunteer-detail-info {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .filters-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-container {
+    width: 100%;
+  }
+  
+  .history-table {
+    display: block;
+    overflow-x: auto;
+  }
+} 

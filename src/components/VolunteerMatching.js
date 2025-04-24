@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { fetchEvents, matchVolunteers } from "../services/api";
-import './VolunteerMatching.css'; // Import the CSS file
+import { fetchEvents, matchVolunteers, assignVolunteer } from "../services/api";
+import './VolunteerMatching.css';
 
 const VolunteerMatching = () => {
     const [volunteers, setVolunteers] = useState([]);
@@ -11,21 +11,34 @@ const VolunteerMatching = () => {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+    // Function to load events
+    const loadEvents = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            console.log("Fetching events...");
+            const response = await fetchEvents();
+            console.log("Fetched events:", response.data);
+            
+            if (response.data && Array.isArray(response.data)) {
+                setEvents(response.data);
+                
+                if (response.data.length === 0) {
+                    setError("No events found. Please create an event first.");
+                }
+            } else {
+                throw new Error("Invalid response format");
+            }
+        } catch (err) {
+            console.error("Error loading events:", err);
+            setError("Failed to load events. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Fetch events on component load
     useEffect(() => {
-        const loadEvents = async () => {
-            try {
-                setLoading(true);
-                const response = await fetchEvents();
-                setEvents(response.data);
-            } catch (err) {
-                console.error("Error loading events:", err);
-                setError("Failed to load events. Please try again.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadEvents();
     }, []);
 
@@ -42,8 +55,10 @@ const VolunteerMatching = () => {
             setSelectedEvent(eventId);
             setError("");
             
+            console.log("Finding matches for event:", eventId);
             // Get matched volunteers from API
             const response = await matchVolunteers(eventId);
+            console.log("Matched volunteers:", response.data);
             
             if (response.data && Array.isArray(response.data)) {
                 setMatchedVolunteers(response.data);
@@ -71,18 +86,12 @@ const VolunteerMatching = () => {
 
         try {
             setLoading(true);
+            setError("");
             
-            // Call API to assign volunteer
-            await fetch(`http://localhost:5001/api/match/assign`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    eventId: selectedEvent,
-                    userId: volunteerId
-                }),
-            });
+            console.log(`Assigning volunteer ${volunteerId} to event ${selectedEvent}`);
+            // Call API to assign volunteer using the service function
+            const response = await assignVolunteer(selectedEvent, volunteerId);
+            console.log("Assignment response:", response);
             
             setSuccess("Volunteer assigned successfully!");
             setTimeout(() => setSuccess(""), 3000);
@@ -101,90 +110,161 @@ const VolunteerMatching = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
-    const getMatchScore = (volunteer) => {
-        if (!volunteer.matchScore) return "N/A";
-        
-        // Convert score to percentage
-        const score = Math.round(volunteer.matchScore * 100);
-        
-        // Style based on score
-        if (score >= 80) return <span className="high-match">{score}%</span>;
-        if (score >= 50) return <span className="medium-match">{score}%</span>;
-        return <span className="low-match">{score}%</span>;
+    const getMatchScoreClass = (score) => {
+        if (!score) return "";
+        const percentage = Math.round(score * 100);
+        if (percentage >= 80) return "match-score-high";
+        if (percentage >= 50) return "match-score-medium";
+        return "match-score-low";
+    };
+
+    // Function to select an event card
+    const selectEventCard = (eventId) => {
+        handleEventSelect(eventId);
     };
 
     return (
         <div className="volunteer-matching-container">
-            <h2 className="matching-title">Volunteer Matching</h2>
+            <h2 className="volunteer-matching-title">Match & Assign Volunteers</h2>
+            <p className="volunteer-matching-description">Find and assign the best volunteers for your events based on skills, location, and availability.</p>
             
-            {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
+            {error && (
+                <div className="error-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    {error}
+                    {error.includes("Failed to load events") && (
+                        <button className="find-matches-btn" onClick={loadEvents}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 2v6h-6"></path>
+                                <path d="M3 12a9 9 0 0 1 15-6.7l3-3"></path>
+                                <path d="M3 22v-6h6"></path>
+                                <path d="M21 12a9 9 0 0 1-15 6.7l-3 3"></path>
+                            </svg>
+                            Retry
+                        </button>
+                    )}
+                </div>
+            )}
+            {success && (
+                <div className="success-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    {success}
+                </div>
+            )}
 
-            <div className="matching-content">
-                <div className="event-selection">
-                    <h3>Select Event</h3>
-                    <p className="info-text">Choose an event to find matching volunteers based on skills, location, and availability.</p>
-                    
-                    <select 
-                        className="event-select"
-                        value={selectedEvent}
-                        onChange={(e) => handleEventSelect(e.target.value)}
-                        disabled={loading}
-                    >
-                        <option value="">Select an Event</option>
+            <div className="event-selection-section">
+                <h3 className="event-selection-title">Select an Event</h3>
+                
+                {loading && events.length === 0 ? (
+                    <p className="loading-text">Loading available events...</p>
+                ) : (
+                    <div className="events-list">
                         {events.map((event) => (
-                            <option key={event.EventID} value={event.EventID}>
-                                {event.EventName} ({formatDate(event.EventDate)})
-                            </option>
+                            <div 
+                                key={event.EventID} 
+                                className={`event-card ${selectedEvent === event.EventID.toString() ? 'selected' : ''}`}
+                                onClick={() => selectEventCard(event.EventID.toString())}
+                            >
+                                <h4 className="event-name">{event.EventName}</h4>
+                                <p className="event-details"><strong>Date:</strong> {formatDate(event.EventDate)}</p>
+                                <p className="event-details"><strong>Location:</strong> {event.Location}</p>
+                                <p className="event-details"><strong>Required Skills:</strong> {event.RequiredSkills}</p>
+                                <div className={`event-urgency urgency-${event.Urgency}`}>
+                                    Urgency Level: {event.Urgency}
+                                </div>
+                            </div>
                         ))}
-                    </select>
-                    
-                    {selectedEvent && (
-                        <div className="selected-event-details">
-                            {events.filter(e => e.EventID.toString() === selectedEvent.toString()).map(event => (
-                                <div key={event.EventID} className="event-card">
-                                    <h4>{event.EventName}</h4>
-                                    <p><strong>Date:</strong> {formatDate(event.EventDate)}</p>
-                                    <p><strong>Location:</strong> {event.Location}</p>
-                                    <p><strong>Required Skills:</strong> {event.RequiredSkills}</p>
-                                    <p><strong>Urgency:</strong> <span className={`urgency-level urgency-${event.Urgency}`}>{event.Urgency}</span></p>
+                    </div>
+                )}
+                
+                {events.length === 0 && !loading && (
+                    <div className="no-matches">
+                        No events available. Please create events first.
+                    </div>
+                )}
+            </div>
+
+            <div className="volunteer-matches-section">
+                <div className="volunteer-matches-title">
+                    Matching Volunteers
+                    {matchedVolunteers.length > 0 && (
+                        <span className="match-count">{matchedVolunteers.length}</span>
+                    )}
+                </div>
+                
+                {loading && selectedEvent ? (
+                    <p className="loading-text">Finding the best volunteer matches...</p>
+                ) : selectedEvent ? (
+                    matchedVolunteers.length > 0 ? (
+                        <div className="volunteer-matches-list">
+                            {matchedVolunteers.map((volunteer) => (
+                                <div key={volunteer.ID} className="volunteer-card">
+                                    <div className={`match-score ${getMatchScoreClass(volunteer.matchScore)}`}>
+                                        {Math.round(volunteer.matchScore * 100)}%
+                                    </div>
+                                    <h4 className="volunteer-name">{volunteer.FullName}</h4>
+                                    <p className="volunteer-details"><strong>Skills:</strong> {volunteer.Skills}</p>
+                                    <p className="volunteer-details"><strong>Location:</strong> {volunteer.City}, {volunteer.State}</p>
+                                    
+                                    {volunteer.Skills && (
+                                        <div className="matching-skills">
+                                            {volunteer.Skills.split(',').map((skill, index) => (
+                                                <span 
+                                                    key={index} 
+                                                    className={`skill-tag ${events.find(e => e.EventID.toString() === selectedEvent)?.RequiredSkills.includes(skill.trim()) ? 'matching-skill' : ''}`}
+                                                >
+                                                    {skill.trim()}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    
+                                    <button 
+                                        className="assign-btn"
+                                        onClick={() => handleAssignVolunteer(volunteer.ID)}
+                                        disabled={loading}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                        Assign to Event
+                                    </button>
                                 </div>
                             ))}
                         </div>
-                    )}
-                </div>
-
-                <div className="volunteer-matches">
-                    <h3>Matching Volunteers</h3>
-                    {loading ? (
-                        <p className="loading-text">Finding matches...</p>
-                    ) : selectedEvent ? (
-                        matchedVolunteers.length > 0 ? (
-                            <div className="volunteer-list">
-                                {matchedVolunteers.map((volunteer) => (
-                                    <div key={volunteer.ID} className="volunteer-card">
-                                        <div className="volunteer-info">
-                                            <h4>{volunteer.FullName}</h4>
-                                            <p><strong>Skills:</strong> {volunteer.Skills}</p>
-                                            <p><strong>Location:</strong> {volunteer.City}, {volunteer.State}</p>
-                                            <p><strong>Match Score:</strong> {getMatchScore(volunteer)}</p>
-                                        </div>
-                                        <button 
-                                            className="assign-button"
-                                            onClick={() => handleAssignVolunteer(volunteer.ID)}
-                                        >
-                                            Assign
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="no-matches">No matching volunteers found for this event.</p>
-                        )
                     ) : (
-                        <p className="select-prompt">Please select an event to see matching volunteers.</p>
-                    )}
-                </div>
+                        <div className="no-matches">
+                            No matching volunteers found for this event.
+                            <p>Try selecting a different event or adjusting the required skills.</p>
+                        </div>
+                    )
+                ) : (
+                    <div className="no-matches">
+                        Please select an event to see matching volunteers.
+                    </div>
+                )}
+                
+                {selectedEvent && !loading && (
+                    <button 
+                        className="find-matches-btn"
+                        onClick={() => handleEventSelect(selectedEvent)}
+                        disabled={loading}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Refresh Matches
+                    </button>
+                )}
             </div>
         </div>
     );

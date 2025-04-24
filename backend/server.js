@@ -4,12 +4,16 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const { routeMonitor } = require('./utils/routeMonitor');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 // Enhanced security with helmet
 app.use(helmet());
+
+// Route monitoring middleware
+app.use(routeMonitor);
 
 // Logging middleware
 app.use(morgan('dev'));
@@ -29,6 +33,15 @@ app.get('/', (req, res) => {
     res.send('Volunteer Management API is running');
 });
 
+// Add middleware to handle requests without the /api prefix
+// This is a temporary fix for clients that might be using the wrong URL
+app.use('/auth/*', (req, res, next) => {
+    console.log('Redirecting from /auth/* to /api/auth/*');
+    // Forward the request to the correct route
+    req.url = '/api' + req.url;
+    next('route');
+});
+
 // Import API routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -45,9 +58,17 @@ app.use('/api/match', matchRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/states', stateRoutes);
 
-// 404 handler
+// Add debug information to 404 responses
 app.use((req, res, next) => {
-    res.status(404).json({ message: 'Route not found' });
+    console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ 
+        message: 'Route not found',
+        requested: {
+            method: req.method,
+            path: req.originalUrl
+        },
+        suggestion: "If trying to access authentication routes, make sure to use the /api prefix."
+    });
 });
 
 // Global error handler
@@ -62,6 +83,7 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`API available at: http://localhost:${PORT}/api`);
 });
 
 // Handle uncaught exceptions

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-container {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .test-button {
+            padding: 10px 15px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    
+    <div class="test-container">
+        <h2>1. Test Server Connection</h2>
+        <button class="test-button" onclick="testServerConnection()">Test Server</button>
+        <div id="server-result" class="result"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>2. Test Login - Without /api prefix</h2>
+        <button class="test-button" onclick="testLoginWithoutPrefix()">Test Login (/auth/login)</button>
+        <div id="login-without-prefix-result" class="result"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>3. Test Login - With /api prefix</h2>
+        <button class="test-button" onclick="testLoginWithPrefix()">Test Login (/api/auth/login)</button>
+        <div id="login-with-prefix-result" class="result"></div>
+    </div>
+
+    <script>
+        async function testServerConnection() {
+            const resultElement = document.getElementById('server-result');
+            resultElement.innerHTML = "Testing connection to server...";
+            
+            try {
+                const response = await fetch('http://localhost:5001/');
+                const data = await response.text();
+                resultElement.innerHTML = `<span class="success">✓ Server is running!</span>\nResponse: ${data}`;
+            } catch (error) {
+                resultElement.innerHTML = `<span class="error">✗ Error connecting to server</span>\n${error.message}`;
+                console.error('Server connection error:', error);
+            }
+        }
+        
+        async function testLoginWithoutPrefix() {
+            const resultElement = document.getElementById('login-without-prefix-result');
+            resultElement.innerHTML = "Testing login without /api prefix...";
+            
+            try {
+                const response = await fetch('http://localhost:5001/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@matchbook.com',
+                        password: 'admin123'
+                    })
+                });
+                
+                const status = response.status;
+                const data = await response.json();
+                
+                resultElement.innerHTML = `<span class="${response.ok ? 'success' : 'error'}">${response.ok ? '✓' : '✗'} Status: ${status}</span>\nResponse: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultElement.innerHTML = `<span class="error">✗ Error during login test</span>\n${error.message}`;
+                console.error('Login test error:', error);
+            }
+        }
+        
+        async function testLoginWithPrefix() {
+            const resultElement = document.getElementById('login-with-prefix-result');
+            resultElement.innerHTML = "Testing login with /api prefix...";
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@matchbook.com',
+                        password: 'admin123'
+                    })
+                });
+                
+                const status = response.status;
+                const data = await response.json();
+                
+                resultElement.innerHTML = `<span class="${response.ok ? 'success' : 'error'}">${response.ok ? '✓' : '✗'} Status: ${status}</span>\nResponse: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultElement.innerHTML = `<span class="error">✗ Error during login test</span>\n${error.message}`;
+                console.error('Login test error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
