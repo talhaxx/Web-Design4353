@@ -117,6 +117,12 @@ const NavBar = () => {
                                     >
                                         Volunteer History
                                     </Link>
+                                    <Link 
+                                        to="/reports" 
+                                        className={isActive("/reports") ? "active" : ""}
+                                    >
+                                        Reports
+                                    </Link>
                                 </>
                             )}
 

@@ -12,6 +12,7 @@ import Login from "./components/Login";
 import AdminLogin from "./components/AdminLogin";
 import Opportunities from "./components/Opportunities";
 import Home from "./components/Home";
+import ReportingModule from "./components/ReportingModule";
 
 const ProtectedRoute = ({ children, adminOnly }) => {
     const { user } = useContext(AuthContext);
@@ -73,6 +74,7 @@ function App() {
                     <Route path="/events/manage" element={<ProtectedRoute adminOnly><EventManagement /></ProtectedRoute>} />
                     <Route path="/match-volunteers" element={<ProtectedRoute adminOnly><VolunteerMatching /></ProtectedRoute>} />
                     <Route path="/volunteers" element={<ProtectedRoute adminOnly><VolunteerHistory /></ProtectedRoute>} />
+                    <Route path="/reports" element={<ProtectedRoute adminOnly><ReportingModule /></ProtectedRoute>} />
                     
                     {/* Redirect routes */}
                     <Route 

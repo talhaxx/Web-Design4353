@@ -460,6 +460,104 @@ export const sendNotification = async (email, message, type = "general") => {
     }
 };
 
+// Report Services
+export const fetchReportData = async (reportType, format = 'json') => {
+    try {
+        console.log(`Making API request to fetch ${reportType} report with format ${format}`);
+        
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+        console.log('Auth token:', token ? 'Present' : 'Not found');
+        
+        // Ensure token is set for the request
+        if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            console.error('No auth token found for API request');
+            return { 
+                success: false, 
+                error: 'Authentication required. Please log in again.',
+                data: []
+            };
+        }
+        
+        // Only return JSON data in the response, for PDF and CSV initiate direct download
+        if (format === 'json') {
+            const response = await api.get(`/reports/${reportType}?format=${format}`);
+            console.log('API response:', response);
+            
+            // Handle edge cases where data structure might be inconsistent
+            if (response && response.data) {
+                if (response.data.data) {
+                    // Normal case: { success: true, data: [...] }
+                    return response.data;
+                } else if (Array.isArray(response.data)) {
+                    // If API directly returns the array
+                    return { data: response.data };
+                } else {
+                    // Fallback for any other structure
+                    return { data: [] };
+                }
+            }
+            
+            return { data: [] }; // Fallback empty data
+        } else {
+            // For PDF and CSV, trigger direct download using window.location
+            // This is more reliable than using a form
+            const downloadUrl = `${API_URL}/reports/${reportType}?format=${format}&token=${token}`;
+            console.log('Opening download URL:', downloadUrl);
+            
+            // Use window.open with _self to prevent navigation away from current page
+            const downloadWindow = window.open(downloadUrl, '_blank');
+            
+            // If popup was blocked, fallback to direct assignment
+            if (!downloadWindow) {
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.target = '_blank';
+                a.download = `${reportType}_report.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            
+            // Return success response
+            return { success: true, data: [] };
+        }
+    } catch (error) {
+        console.error(`Error fetching ${reportType} report:`, error);
+        if (error.response) {
+            console.error('Server response error:', error.response.status, error.response.data);
+            
+            // Handle authentication errors
+            if (error.response.status === 401 || error.response.status === 403) {
+                return { 
+                    success: false, 
+                    error: 'Authentication failed. Please log in again.',
+                    data: []
+                };
+            }
+        }
+        
+        // Return a structured error that can be handled by the UI
+        return { 
+            success: false, 
+            error: error.response?.data?.message || error.message || 'Failed to fetch report',
+            data: []
+        };
+    }
+};
+
+export const fetchReportDataDetail = async (detailType, itemId) => {
+    try {
+        const response = await api.get(`/reports/${detailType}/${itemId}`);
+        return response;
+    } catch (error) {
+        console.error(`Error fetching ${detailType} detail report:`, error);
+        throw error;
+    }
+};
+
 // Other services can be added as needed
 
 export default api;
